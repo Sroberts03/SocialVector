@@ -1,0 +1,1 @@
+#takes activity and creates an activity vector and matches it to the users intrest vector to find best fit. Also takes into account recency and distance of activity.
