@@ -2,9 +2,9 @@ import httpx
 import os
 
 class WheatherClient:
-    def __init__(self):
-        self.api_key = os.getenv("OPENWEATHER_API_KEY")
-        self.base_url = "https://api.openweathermap.org/data/2.5/weather"
+    def __init__(self, api_key: str, base_url: str = None):
+        self.api_key = api_key
+        self.base_url = base_url
 
     async def get_weather(self, city: str = "Rexburg"):
         """Fetches current weather to see if outdoor activities are safe."""

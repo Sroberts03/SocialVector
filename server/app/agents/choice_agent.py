@@ -1,5 +1,6 @@
+from datetime import datetime
 from openai import AsyncOpenAI
-from app.models.schemas import FinalActivity, ActivityCandidate, VibeSchema
+from app.models.schemas import FinalActivity, ActivityCandidate, LocationInfo, VibeSchema
 from app.prompts.agent_prompts import CHOICE_SYSTEM_PROMPT, CHOICE_USER_INPUT
 from typing import List
 
@@ -8,7 +9,7 @@ class ChoiceAgent:
         self.client = client
         self.model = model
 
-    async def run(self, vibe, candidates, location="Rexburg"):
+    async def run(self, vibe: VibeSchema, candidates: List[ActivityCandidate], location: LocationInfo) -> FinalActivity:
         # 1. Format the candidates into a readable list for the LLM
         list_str = "\n".join([f"- {c.name}: {c.description}" for c in candidates])
         
@@ -16,12 +17,20 @@ class ChoiceAgent:
         system_msg = CHOICE_SYSTEM_PROMPT.format(
             energy_level=vibe.energy_level,
             environment_pref=vibe.environment_pref,
-            tags=", ".join(vibe.tags)
+            time_for_activity=vibe.time_for_activity,
+            tags=", ".join(vibe.tags),
+            city=location.city,
+            state=location.state,
+            formatted_address=location.formatted_address,
+            lat=location.lat,
+            lon=location.lon,
+            is_precise=location.is_precise
         )
-        
+
         user_msg = CHOICE_USER_INPUT.format(
-            location=location,
-            candidates_list=list_str
+            formatted_address=location.formatted_address,
+            candidates_list=list_str,
+            time_for_activity=vibe.time_for_activity
         )
         
 
