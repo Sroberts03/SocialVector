@@ -23,11 +23,11 @@ class Location:
         # Fallback to user context or default
         print("Falling back to user context for location info.")
         return LocationInfo(
-            city=user_context.get("city"),
-            state=user_context.get("state"),
-            formatted_address=user_context.get("location") or "near you",
-            lat=latitude,
-            lon=longitude,
+            city=user_context.get("city") or "Unknown City",
+            state=user_context.get("state") or "Unknown State",
+            formatted_address=f"{user_context.get('city', '')}, {user_context.get('state', '')}".strip(", "),
+            lat=user_context.get("lat") if user_context.get("lat") else None,
+            lon=user_context.get("lon") if user_context.get("lon") else None,
             is_precise=False
         )
 

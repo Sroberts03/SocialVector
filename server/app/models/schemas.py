@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field
-from typing import List, Optional, Literal
+from typing import List, Optional, Literal, Union
 
 class VibeSchema(BaseModel):
     """The output of the Vibe Agent. Influences all following agents."""
@@ -39,3 +39,8 @@ class LocationInfo(BaseModel):
     lat: Optional[float] = None
     lon: Optional[float] = None
     is_precise: bool = Field(description="True if we have a precise location, False if it's a fallback based on IP or user context")
+
+class WeatherInfo(BaseModel):
+    temp: Union[float, str]
+    condition: str
+    description: str

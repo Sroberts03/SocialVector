@@ -1,7 +1,6 @@
 from datetime import datetime
 from openai import AsyncOpenAI
 from app.models.schemas import FinalActivity, FinalReview, LocationInfo, VibeSchema
-from app.integrations.wheather_client import WheatherClient
 from app.prompts.agent_prompts import REVIEWER_SYSTEM_PROMPT
 
 class ReviewerAgent:
@@ -12,10 +11,7 @@ class ReviewerAgent:
 
     async def run(self, vibe: VibeSchema, top_choice: FinalActivity, location: LocationInfo) -> FinalReview:
         # 1. Get real data from your WeatherClient
-        weather_data = await self.weather.get_weather(location.formatted_address)
-        temp = weather_data.get("temp", "unknown") if weather_data else "unknown"
-        condition = weather_data.get("condition", "unknown") if weather_data else "unknown"
-        description = weather_data.get("description", "unknown conditions") if weather_data else "unknown conditions"
+        weather_data = await self.weather.get_weather(location)
         
         # 2. Format the prompt with location AND weather
         system_msg = REVIEWER_SYSTEM_PROMPT.format(
@@ -25,9 +21,9 @@ class ReviewerAgent:
             lat=location.lat,
             lon=location.lon,
             is_precise=location.is_precise,
-            temp=temp,
-            condition=condition,
-            description=description,
+            temp=weather_data.temp,
+            condition=weather_data.condition,
+            description=weather_data.description,
             time_for_activity=vibe.time_for_activity,
             energy_level=vibe.energy_level,
             environment_pref=vibe.environment_pref,

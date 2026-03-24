@@ -24,7 +24,7 @@ class Remy(Agent):
             user_input, 
             latitude=self.user_latitude, 
             longitude=self.user_longitude, 
-            user_context={"city": "Rexburg", "state": "ID"}
+            user_context={"city": "Rexburg", "state": "ID", "lat": 43.8261, "lon": -111.7839}
         )
         return result.model_dump_json() if isinstance(result, FinalReview) else str(result)
 

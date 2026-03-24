@@ -6,23 +6,25 @@ from app.agents.vibe_agent import VibeAgent
 from app.agents.scouting_agent import ScoutingAgent
 from app.agents.choice_agent import ChoiceAgent
 from app.agents.reviewer_agent import ReviewerAgent
-from app.integrations.wheather_client import WheatherClient
+from app.integrations.open_weather import OpenWeather
 from app.core.location import Location
 from app.integrations.google_maps import GoogleMapsClient
+from app.core.weather_service import WeatherService
 
 load_dotenv()
 
 openai_client = AsyncOpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 exa_client = Exa(api_key=os.getenv("EXA_AI_API_KEY"))
-wheather_client = WheatherClient(api_key=os.getenv("OPENWEATHER_API_KEY"), base_url="https://api.openweathermap.org/data/2.5/weather")
 google_maps_client = GoogleMapsClient(api_key=os.getenv("GOOGLE_MAPS_API_KEY"))  
 location = Location(google_maps_client)
+open_weather = OpenWeather(api_key=os.getenv("OPENWEATHER_API_KEY"), base_url=os.getenv("OPENWEATHER_BASE_URL"))
+weather = WeatherService(open_weather)
 
 
 vibe_agent = VibeAgent(openai_client, model="gpt-4o")
 scout_agent = ScoutingAgent(exa_client)
 choice_agent = ChoiceAgent(openai_client, model="gpt-4o")
-reviewer_agent = ReviewerAgent(openai_client, wheather_client)
+reviewer_agent = ReviewerAgent(openai_client, weather)
 
 async def run_remy_workflow(user_transcript: str, user_context: dict, latitude: float = None, longitude: float = None):
     """
